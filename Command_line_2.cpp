@@ -2,7 +2,7 @@
 void Command_line_2(char* argv[]) {
 
     //tính size
-    int size = atoi(argv[3]);
+    int size = atoi(argv[4]);
     int* arr = new int[size];
     string order;
     GenerateData(arr, size, data_order(argv, 5, order));
