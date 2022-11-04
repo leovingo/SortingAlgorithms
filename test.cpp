@@ -1,17 +1,20 @@
 #include <iostream>
+#include <string.h>
+#include <time.h>
+#include <math.h>
+#include <cmath>
+#include <iomanip>
 
 using namespace std;
 
-
-// template <class T>
-// void swap(T &a, T &b) {
-//     T temp = a;
-//     a = b;
-//     b = temp;
-// }
+template <class T>
+void Swap(T &a, T &b) {
+    T c = a;
+    a = b;
+    b = c;
+}
 
 // HEAP SORT
-
 // Ham dua cac phan tu ve vi tri dung voi cau truc heap
 void heapRebuild(int a[], int pos, int n)
 {
@@ -25,11 +28,10 @@ void heapRebuild(int a[], int pos, int n)
 		if (a[pos] >= a[j]) {
 			return;
 		}
-		swap(a[pos], a[j]);
+		Swap(a[pos], a[j]);
 		pos = j;
 	}
 }
-
 // Ham xay dung cau truc heap
 void heapConstruct(int a[], int n)
 {
@@ -37,7 +39,7 @@ void heapConstruct(int a[], int n)
 		heapRebuild(a, i, n);
 	}
 }
-
+// Heap sort
 void heapSort(int a[], int n)
 {
 	heapConstruct(a, n);
@@ -108,10 +110,10 @@ int partition(int a[], int i, int j) {
   for (int k = i+1; k <= j; ++k) { 
     if (a[k] < pivot)  { 
       ++m;
-      swap(a[k], a[m]); 
+      Swap(a[k], a[m]); 
     }
   }
-  swap(a[i], a[m]);
+  Swap(a[i], a[m]);
 
   return m; // return the index of pivot
 }
@@ -130,17 +132,215 @@ void quickSort(int a[], int first, int last)
     }
 }
 
-int main () {
-    int* a = new int[19] {1, 3, 4, 5, 8, 2, 9, 7, 6, 101, 3, 4, 5, 8, 2, 9, 7, 6, 10};
-    for (int i = 0; i < 19; i++) {
-        cout << a[i] << " ";
+//-------------------------------------------------
+
+// Hàm phát sinh mảng dữ liệu ngẫu nhiên
+void GenerateRandomData(int a[], int n)
+{
+	srand((unsigned int)time(NULL));
+
+	for (int i = 0; i < n; i++)
+	{
+		a[i] = rand()%n;
+	}
+}
+
+// Hàm phát sinh mảng dữ liệu có thứ tự tăng dần
+void GenerateSortedData(int a[], int n)
+{
+	for (int i = 0; i < n; i++)
+	{
+		a[i] = i;
+	}
+}
+
+// Hàm phát sinh mảng dữ liệu có thứ tự ngược (giảm dần)
+void GenerateReverseData(int a[], int n)
+{
+	for (int i = 0; i < n; i++)
+	{
+		a[i] = n - 1 - i;
+	}
+}
+
+// Hàm phát sinh mảng dữ liệu gần như có thứ tự
+void GenerateNearlySortedData(int a[], int n)
+{
+	for (int i = 0; i < n; i++)
+	{
+		a[i] = i;
+	}
+	srand((unsigned int) time(NULL));
+	for (int i = 0; i < 10; i ++)
+	{
+		int r1 = rand()%n;
+		int r2 = rand()%n;
+		Swap(a[r1], a[r2]);
+	}
+}
+
+void GenerateData(int a[], int n, int dataType)
+{
+	switch (dataType)
+	{
+	case 0:	// ngẫu nhiên
+		GenerateRandomData(a, n);
+		break;
+	case 1:	// có thứ tự
+		GenerateSortedData(a, n);
+		break;
+	case 2:	// có thứ tự ngược
+		GenerateReverseData(a, n);
+		break;
+	case 3:	// gần như có thứ tự
+		GenerateNearlySortedData(a, n);
+		break;
+	default:
+		printf("Error: unknown data type!\n");
+	}
+}
+
+int Calculate_Complexity(char* argv[], int pos, double& time, int arr[], int size){
+    int comp = 0;
+    clock_t start, end;
+    if (strcmp(argv[pos], "heap-sort") == 0) {
+        start = clock();
+        heapSort(arr, size);
+        end = clock();
+        time = pow(10, 3) * (double(end - start) / double(CLOCKS_PER_SEC));
+        // cout << "Time taken by ... Sort is: " << fixed << time_taken << setprecision(6) << " msec " << endl;        
+    }
+    if (strcmp(argv[pos], "merge-sort") == 0) {
+        start = clock();
+        mergeSort(arr, 0, size - 1);
+        end = clock();
+        time = pow(10, 3) * (double(end - start) / double(CLOCKS_PER_SEC));
+    }
+    if (strcmp(argv[pos], "quick-sort") == 0) {
+        start = clock();
+        quickSort(arr, 0, size - 1);
+        end = clock();
+        time = pow(10, 3) * (double(end - start) / double(CLOCKS_PER_SEC));
+    }
+    return comp;
+}
+
+
+
+void Command_line_3(char* argv[]) {
+	//tính size
+	int size = atoi(argv[3]);
+    
+    // gán biến đầu ra
+    int output;
+    if (strcmp(argv[4], "-time") == 0) {
+        output = 0;
+    } else if (strcmp(argv[4], "-comp") == 0) {
+        output = 1; 
+    } else if (strcmp(argv[4], "-both") == 0) {
+        output = 2;
+    } else {
+        output = -1;
+    }
+
+	//vì kích thước mảng có thể lớn nên khuyên mọi người cấp phát động
+	int* arr=new int[size];
+	double time1, time2, time3, time4;
+	int comp1, comp2, comp3, comp4;
+	//comp1 = Calculate_Complexcity(argv, 2, time1, arr, size);
+	//comp2 = Calculate_Complexcity(argv, 3, time2, arr2, size);
+	cout << "ALGORITHM MODE\n";
+	cout << "Algorithm:" << argv[2] << endl;
+	cout << "Input size: " << size << endl;
+	cout << "Input order: Randomize" << endl;
+    GenerateData(arr, size, 0);
+    comp1 = Calculate_Complexity(argv, 2, time1, arr, size);
+	cout << "--------------\n";
+    switch (output)
+    {
+    case 0:
+        cout << "Running time: " << fixed << time1 << setprecision(3) << " msec " << endl;  
+        break;
+    case 1:
+        cout << "Comparisions: " << comp1 << endl;
+        break;
+    case 2:
+        cout << "Running time: " << fixed << time1 << setprecision(3) << " msec " << endl;  
+        cout << "Comparisions: " << comp1 << endl;
+        break;
+    default:
+        break;
     }
     cout << endl;
-    //mergeSort(a, 0, 18);
-	//heapSort(a, 19);
-    //quickSort(a, 0, 9);
-    for (int i = 0; i < 19; i++) {
-        cout << a[i] << " ";
+    cout << "Input order: Nearly Sorted" << endl;
+    GenerateData(arr, size, 3);
+    comp2 = Calculate_Complexity(argv, 2, time2, arr, size);
+	cout << "--------------\n";
+    switch (output)
+    {
+    case 0:
+        //cout << "Running time: " << time2 << endl;
+        cout << "Running time: " << fixed << time2 << setprecision(3) << " msec " << endl;  
+        break;
+    case 1:
+        cout << "Comparisions: " << comp2 << endl;
+        break;
+    case 2:
+        //cout << "Running time: " << time2 << endl;
+        cout << "Running time: " << fixed << time2 << setprecision(3) << " msec " << endl;  
+        cout << "Comparisions: " << comp2 << endl;
+        break;
+    default:
+        break;
     }
+    cout << endl;
+    cout << "Input order: Sorted" << endl;
+    GenerateData(arr, size, 1);
+    comp3 = Calculate_Complexity(argv, 2, time3, arr, size);
+	cout << "--------------\n";
+    switch (output)
+    {
+    case 0:
+        //cout << "Running time: " << time3 << endl;
+        cout << "Running time: " << fixed << time3 << setprecision(3) << " msec " << endl;  
+        break;
+    case 1:
+        cout << "Comparisions: " << comp3 << endl;
+        break;
+    case 2:
+        //cout << "Running time: " << time3 << endl;
+        cout << "Running time: " << fixed << time3 << setprecision(3) << " msec " << endl;  
+        cout << "Comparisions: " << comp3 << endl;
+        break;
+    default:
+        break;
+    }
+    cout << endl;
+    cout << "Input order: Reversed" << endl;
+    GenerateData(arr, size, 2);
+    comp4 = Calculate_Complexity(argv, 2, time4, arr, size);
+	cout << "--------------\n";
+    switch (output)
+    {
+    case 0:
+        //cout << "Running time: " << time4 << endl;
+        cout << "Running time: " << fixed << time4 << setprecision(3) << " msec " << endl;  
+        break;
+    case 1:
+        cout << "Comparisions: " << comp4 << endl;
+        break;
+    case 2:
+        //cout << "Running time: " << time4 << endl;
+        cout << "Running time: " << fixed << time4 << setprecision(3) << " msec " << endl;  
+        cout << "Comparisions: " << comp4 << endl;
+        break;
+    default:
+        break;
+    }
+}
+
+
+int main(int argc, char*argv2[]) {
+    Command_line_3(argv2);
     return 0;
 }

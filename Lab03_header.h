@@ -4,6 +4,7 @@
 #include <fstream>
 #include <cmath>
 #include <time.h>
+#include <iomanip>
 using namespace std;
 template <class T>
 void Swap(T& a, T& b);
